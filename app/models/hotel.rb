@@ -1,4 +1,6 @@
 class Hotel < ApplicationRecord
+  has_many :amenities
+
   validates_presence_of :identifier
 
   # special handling for alias (patagonia format)
