@@ -8,12 +8,13 @@ class Hotel < ApplicationRecord
   alias_attribute :lng, :longitude
   alias_attribute :info, :description
   alias_attribute :details, :description
+  alias_attribute :destination_id, :destination
 
   include DataCleaning
 
   def self.skip_key?(key)
     # skip associations and unfinished logic
-    key.ends_with?('_id') || key == 'destination' || key == 'images'
+    key == 'images'
   end
 
   def self.create_from(attributes)
