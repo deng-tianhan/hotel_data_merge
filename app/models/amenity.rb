@@ -1,21 +1,15 @@
 class Amenity < ApplicationRecord
   belongs_to :hotel
 
-  def self.data_cleaning(input)
-    output = []
+  include DataCleaning
 
-    case input
-    when Array
-      output = input.map { |x| data_cleaning(x) }
-    when Hash
-      # flatten nested entries (paperflies format)
-      input.each { |_, v| output.push(data_cleaning(x)) }
-    else
-      clean_data = input.strip.underscore.gsub('_', ' ')
-      clean_data = 'wifi' if clean_data == 'wi fi'
-      output.push(clean_data)
-    end
+  def self.clean_array(input)
+    [ self.data_cleaning(input) ].flatten.compact
+  end
 
+  def self.process_string(input)
+    output = input.strip.underscore.gsub('_', ' ')
+    output = 'wifi' if output == 'wi fi'
     return output
   end
 end
