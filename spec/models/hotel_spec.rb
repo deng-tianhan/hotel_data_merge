@@ -48,5 +48,52 @@ RSpec.describe Hotel, type: :model do
         end
       end
     end
+
+    context 'save data' do
+      before { allow(Hotel).to receive(:new).and_return(subject) }
+      let(:attributes) { { identifier: identifier, amenities: ['wifi'] } }
+
+      it 'persists hotel and amenities' do
+        expect{ Hotel.create_from(attributes) }
+        .to change{ Hotel.count }.by(1)
+        .and change{ Amenity.count }.by(1)
+      end
+
+      it 'does not create duplicate' do
+        Hotel.create_from(attributes)
+        expect{ Hotel.create_from(attributes) }
+        .to not_change{ Hotel.count }
+        .and not_change{ Amenity.count }
+      end
+
+      context 'update hotel raises error' do
+        before { allow(subject).to receive(:update!).and_raise('hotel') }
+
+        it 'does not persist amenities' do
+          expect{ Hotel.create_from(attributes) }
+          .to raise_error('hotel')
+          .and not_change{ Amenity.count }
+        end
+      end
+
+      context 'create amenities raises error' do
+        before { allow(subject).to receive(:create_amenities_from).and_raise('amenities') }
+
+        it 'persists hotel' do
+          expect{ Hotel.create_from(attributes) }
+          .to raise_error('amenities')
+          .and change{ Hotel.count }.by(1)
+        end
+      end
+    end
+  end
+
+  describe '#booking_conditions=' do
+    subject { Hotel.new(details: 'details') }
+
+    it 'appends after details' do
+      subject.booking_conditions = ['line1', 'line2']
+      expect(subject.details).to eq('details line1 line2')
+    end
   end
 end

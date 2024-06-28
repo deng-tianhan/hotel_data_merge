@@ -31,5 +31,13 @@ RSpec.describe DataCleaning do
       input = paperflies_hotels.sample
       expect(temp_class.data_cleaning(input)).to include('identifier' => input['hotel_id'])
     end
+
+    it 'merges amenities by dropping nested key' do
+      input = {
+        amenities: { "general"=>["pool"] },
+        facilities: { "room"=>["tv"] }
+      }
+      expect(temp_class.data_cleaning(input)).to include('amenities' => ['pool', 'tv'])
+    end
   end
 end

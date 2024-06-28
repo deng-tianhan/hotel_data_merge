@@ -13,6 +13,7 @@ module DataCleaning
       return key
     end
 
+    # recursively clean Array or Hash format
     def self.data_cleaning(input)
       output = input
 
@@ -28,9 +29,17 @@ module DataCleaning
 
           next if skip_key?(key)
 
-          # special handling for nested attributes (paperflies format)
           if value.is_a?(Hash)
-            output.merge!(data_cleaning(value))
+            if 'amenities facilities'.include?(key)
+              # special handling to drop nested key for amenities (paperflies format)
+              # {amenities:{x:[1],y:[2]}} --> {amenities:[1,2]}
+              output['amenities'] ||= []
+              output['amenities'].concat(data_cleaning(value.values).flatten)
+            else
+              # special handling for nested attributes (paperflies format)
+              # {location:{country:'SG'}} --> {country:'SG'}
+              output.merge!(data_cleaning(value))
+            end
             next
           end
 

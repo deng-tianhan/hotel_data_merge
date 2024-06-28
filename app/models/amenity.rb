@@ -4,7 +4,8 @@ class Amenity < ApplicationRecord
   include DataCleaning
 
   def self.clean_array(input)
-    [ self.data_cleaning(input) ].flatten.compact
+    [ self.data_cleaning(input)['amenities'] ]
+    .flatten.compact
   end
 
   def self.process_string(input)
