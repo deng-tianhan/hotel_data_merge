@@ -13,7 +13,7 @@ module DataCleaning
       return key
     end
 
-    # recursively clean Array or Hash format
+    # deep transform keys and values
     def self.data_cleaning(input)
       output = input
 
@@ -27,26 +27,14 @@ module DataCleaning
         input.each do |key, value|
           key = transform_key(key)
 
-          next if skip_key?(key)
-
           if value.is_a?(Hash)
-            if 'amenities facilities'.include?(key)
-              # special handling to drop nested key for amenities (paperflies format)
-              # {amenities:{x:[1],y:[2]}} --> {amenities:[1,2]}
-              output['amenities'] ||= []
-              output['amenities'].concat(data_cleaning(value.values).flatten)
-            else
-              # special handling for nested attributes (paperflies format)
-              # {location:{country:'SG'}} --> {country:'SG'}
-              output.merge!(data_cleaning(value))
-            end
-            next
+            process_nested_hash(key, value, output)
+          else
+            output[key] = data_cleaning(value)
           end
-
-          output[key] = data_cleaning(value)
         end
 
-        output['identifier'] ||= output.delete('id')
+        output[Hotel::UNIQUE_KEY] ||= output.delete('id')
       end
 
       return output
@@ -56,8 +44,7 @@ module DataCleaning
       input.strip
     end
 
-    def self.skip_key?(key)
-      false
+    def self.process_nested_hash(key, value, output)
     end
   end
 end

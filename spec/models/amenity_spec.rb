@@ -12,4 +12,14 @@ RSpec.describe Amenity, type: :model do
     it { expect(process('WiFi')).to contain_exactly('wifi') }
     it { expect(process('Coffee machine')).to contain_exactly('coffee machine') }
   end
+
+  describe '.data_cleaning' do
+    it 'merges amenities by dropping nested key' do
+      input = {
+        amenities: { "general"=>["pool"] },
+        facilities: { "room"=>["tv"] }
+      }
+      expect(Amenity.data_cleaning(input)).to include('amenities' => ['pool', 'tv'])
+    end
+  end
 end

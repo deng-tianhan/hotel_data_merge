@@ -10,11 +10,6 @@ RSpec.describe DataCleaning do
         .to include('some_key' => 'some value')
     end
 
-    it 'converts nested keys and flattens the structure' do
-      expect(temp_class.data_cleaning(' outerKey ' => { ' Inner Key ' => ' inner value ' }))
-        .to include('inner key' => 'inner value')
-    end
-
     it 'does not change primary key' do
       expect(temp_class.data_cleaning(id: 123).keys).not_to respond_to(:id)
     end
@@ -38,14 +33,6 @@ RSpec.describe DataCleaning do
       expect(temp_class.data_cleaning(input))
         .to include('identifier' => input['hotel_id'],
                     'destination_id' => input['destination_id'])
-    end
-
-    it 'merges amenities by dropping nested key' do
-      input = {
-        amenities: { "general"=>["pool"] },
-        facilities: { "room"=>["tv"] }
-      }
-      expect(temp_class.data_cleaning(input)).to include('amenities' => ['pool', 'tv'])
     end
   end
 end
