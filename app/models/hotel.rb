@@ -2,6 +2,7 @@ class Hotel < ApplicationRecord
   include DataCleaning
 
   has_many :amenities, dependent: :destroy
+  has_many :images, as: :imageable, dependent: :destroy
 
   validates :identifier, presence: true, uniqueness: true
 
@@ -24,12 +25,14 @@ class Hotel < ApplicationRecord
     def build_from(attributes)
       data = data_cleaning(attributes)
       hotel_data = data.extract!(*column_names, *ALIASES.keys)
-      amenities_data = data.extract!(*Amenity::SPECIAL_KEYS.clone)
+      amenities_data = data.extract!(*Amenity::SPECIAL_KEYS)
+      images_data = data.extract!(*Image::SPECIAL_KEYS)
 
       hotel = Hotel.where(identifier: hotel_data[UNIQUE_KEY]).first_or_initialize
       hotel.assign_attributes(
         **hotel_data,
         amenities: Amenity.build_from(amenities_data),
+        images: Image.build_from(images_data),
         metadata: data
       )
       return hotel

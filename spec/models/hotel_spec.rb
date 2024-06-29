@@ -96,6 +96,24 @@ RSpec.describe Hotel, type: :model do
             .and not_change{ Hotel.count }
         end
       end
+
+      context 'images raises error' do
+        let(:attributes) do
+          {
+            identifier: identifier,
+            amenities: ['wifi'],
+            facilities: { room: 'tv' },
+            images: { room: [{ link: 'link' }] }
+          }
+        end
+        before { allow(Image).to receive(:new).and_raise('images') }
+
+        it 'does not persists hotel' do
+          expect{ Hotel.create_from(attributes) }
+            .to raise_error('images')
+            .and not_change{ Hotel.count }
+        end
+      end
     end
   end
 
