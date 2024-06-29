@@ -21,12 +21,14 @@ class Amenity < ApplicationRecord
       return output
     end
 
-    def process_nested_hash(key, value, output)
-      return if SPECIAL_KEYS.exclude?(key)
+    def process_nested(key, value, output)
       # special handling to drop nested key for amenities (paperflies format)
       # {amenities:{x:[1],y:[2]}} --> {amenities:[1,2]}
-      output[SPECIAL_KEYS.first] ||= []
-      output[SPECIAL_KEYS.first].concat(data_cleaning(value.values).flatten)
+      if SPECIAL_KEYS.include?(key) && value.is_a?(Hash)
+        output[SPECIAL_KEYS.first] ||= []
+        output[SPECIAL_KEYS.first].concat(data_cleaning(value.values).flatten)
+        return true
+      end
     end
   end
 end

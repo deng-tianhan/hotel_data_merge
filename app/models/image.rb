@@ -17,17 +17,19 @@ class Image < ApplicationRecord
         .map { |attrs| new(attrs) }
     end
 
-    def process_nested_hash(key, value, output)
-      return if SPECIAL_KEYS.exclude?(key)
+    def process_nested(key, value, output)
       # {images:{x:[attrs]}} --> {images:[attrs.merge(category:x)]}
-      output[SPECIAL_KEYS.first] ||= []
-      output[SPECIAL_KEYS.first].concat(
-        # value = [x,[attrs]]
-        value.map do |k, v|
-          # k,v = x,[attrs]
-          v.map{ |attrs| attrs.merge('category' => k) }
-        end.flatten
-      )
+      if SPECIAL_KEYS.include?(key) && value.is_a?(Hash)
+        output[SPECIAL_KEYS.first] ||= []
+        output[SPECIAL_KEYS.first].concat(
+          # value = [x,[attrs]]
+          value.map do |k, v|
+            # k,v = x,[attrs]
+            v.map{ |attrs| attrs.merge('category' => k) }
+          end.flatten
+        )
+        return true
+      end
     end
   end
 end

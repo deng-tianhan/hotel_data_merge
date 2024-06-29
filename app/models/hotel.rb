@@ -54,11 +54,13 @@ class Hotel < ApplicationRecord
       return output
     end
 
-    def process_nested_hash(key, value, output)
-      return if SPECIAL_KEYS.exclude?(key)
+    def process_nested(key, value, output)
       # special handling for nested attributes (paperflies format)
       # {location:{country:'SG'}} --> {country:'SG'}
-      output.merge!(data_cleaning(value))
+      if SPECIAL_KEYS.include?(key) && value.is_a?(Hash)
+        output.merge!(data_cleaning(value))
+        return true
+      end
     end
   end
 end

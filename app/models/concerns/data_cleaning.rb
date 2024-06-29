@@ -24,10 +24,7 @@ module DataCleaning
         output = {}
         input.each do |key, value|
           key = transform_key(key)
-
-          if value.is_a?(Hash)
-            process_nested_hash(key, value, output)
-          else
+          if !process_nested(key, value, output)
             output[key] = deep_transform(value)
           end
         end
@@ -40,7 +37,7 @@ module DataCleaning
       input.strip
     end
 
-    def self.process_nested_hash(key, value, output)
+    def self.process_nested(key, value, output)
     end
   end
 end

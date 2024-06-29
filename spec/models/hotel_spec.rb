@@ -72,6 +72,19 @@ RSpec.describe Hotel, type: :model do
         expect(Hotel.last).to have_attributes(info: 'text', latitude: 1.2)
       end
 
+      it 'keeps association attributes' do
+        Hotel.create_from(
+          {
+            identifier: identifier,
+            amenities: ['wifi'],
+            facilities: { room: 'tv' },
+            images: { room: [{ link: 'link' }] }
+          }
+        )
+        expect(Hotel.last.amenities.count).to eq(2)
+        expect(Hotel.last.images.count).to eq(1)
+      end
+
       it 'converts unknown attribute to metadata' do
         Hotel.create_from(**attributes, info: 1, a:'b', c:'d')
         expect(Hotel.last.metadata).to eq('a'=>'b', 'c'=>'d')
