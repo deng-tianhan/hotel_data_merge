@@ -57,6 +57,18 @@ class HotelsController < ApplicationController
     end
   end
 
+  def create_hotels_from(json_string)
+    json_array = JSON.parse(json_string)
+
+    errors = []
+    json_array.each do |attributes|
+      hotel = Hotel.create_from(attributes)
+      errors.push(hotel.errors) if hotel.errors.present?
+    end
+
+    return errors
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_hotel

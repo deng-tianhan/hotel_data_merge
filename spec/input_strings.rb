@@ -9,6 +9,10 @@ def mixed_hotels
   [acme_hotels, patagonia_hotels, paperflies_hotels].flatten
 end
 
+def mixed_string
+  mixed_hotels.to_json
+end
+
 def acme_hotels
   JSON.parse(acme_string)
 end
