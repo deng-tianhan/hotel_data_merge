@@ -2,9 +2,17 @@
 
 <%= render @hotel %>
 
-<div>
-  <%= link_to "Edit this hotel", edit_hotel_path(@hotel) %> |
-  <%= link_to "Back to hotels", hotels_path %>
-
-  <%= button_to "Destroy this hotel", @hotel, method: :delete %>
+<div class="margin-bottom">
+  <% if @hotel.id > 1 %>
+    <%= link_to "Previous hotel", hotel_path(@hotel.id - 1) %>
+  <% else %>
+    Previous hotel
+  <% end %>
+  |
+  <% if @hotel.id < Hotel.count %>
+    <%= link_to "Next hotel", hotel_path(@hotel.id + 1) %>
+  <% else %>
+    Next hotel
+  <% end %>
 </div>
+<%= button_to "Back to hotels", hotels_path, method: :get %>

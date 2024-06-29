@@ -15,3 +15,52 @@
  *= require normalize
  *= require skeleton
  */
+
+body {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.margin-bottom {
+  margin-bottom: 1rem;
+}
+
+.no-margin-bottom {
+  margin-bottom: 0;
+}
+
+.less-margin-bottom {
+  margin-bottom: 0.5rem;
+}
+
+table.borderless th,
+table.borderless td {
+  border: none;
+}
+
+table.less-padding th,
+table.less-padding td {
+  padding: 0.5rem;
+  padding-left: 0;
+}
+
+table.hotel-details th {
+  width: 10rem;
+}
+
+.important {
+  color: red;
+  font-weight: bold;
+}
+
+.min-content {
+  width: min-content;
+}
+
+.top-align {
+  vertical-align: top;
+}
+
+.max-width-60 {
+  max-width: 60vw;
+}

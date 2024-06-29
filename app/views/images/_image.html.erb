@@ -1,0 +1,10 @@
+<div id="<%= dom_id image %>">
+  <div>
+    <%= image.category.titleize %> - <%= image.caption.titleize %>
+  </div>
+  <img
+    class="max-width-60"
+    src=<%= image.url %>
+    alt="<%= image.caption.titleize %>"
+  >
+</div>

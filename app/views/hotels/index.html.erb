@@ -3,12 +3,42 @@
 <h1>Hotels</h1>
 
 <div id="hotels">
-  <% @hotels.each do |hotel| %>
-    <%= render hotel %>
-    <p>
-      <%= link_to "Show this hotel", hotel %>
-    </p>
-  <% end %>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Indentifier</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @hotels.each do |hotel| %>
+        <tr>
+          <td id="hotel_name_<%= dom_id hotel %>">
+            <%= hotel.name.titleize %>
+          </td>
+          <td id="identifier_<%= dom_id hotel %>">
+            <code class="min-content"><%= hotel.identifier %></code>
+          </td>
+          <td><%= link_to "View Details", hotel %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
 
-<%= link_to "New hotel", new_hotel_path %>
+<h4 class="less-margin-bottom">Note</h4>
+
+<p class="less-margin-bottom">By default, hotels are seeded using:</p>
+<pre><code>rails db:seed</code></pre>
+
+<p class="less-margin-bottom">It populates the db in the following order:</p>
+
+<ol>
+  <% ["acme", "patagonia", "paperflies"].each do |name| %>
+    <li>snapshot from <a href="https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/<%= name %>" target="blank"><%= name %></a></li>
+  <% end %>
+</ol>
+<p>This means duplicate entries from paperflies will overwrite other sources.</p>
+
+<!-- <%= link_to "New hotel", new_hotel_path %> -->

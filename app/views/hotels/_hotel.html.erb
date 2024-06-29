@@ -1,7 +1,36 @@
-<div id="<%= dom_id hotel %>">
-  <p>
-    <strong>Index:</strong>
-    <%= hotel.index %>
-  </p>
+<H3><%= hotel.name.titleize %></H3>
 
+<div id="<%= dom_id hotel %>">
+  <table class="borderless less-padding hotel-details">
+    <tbody>
+      <tr>
+        <th class="top-align">Identifier:</th>
+        <td><code class="min-content"><%= hotel.identifier %></code></td>
+      </tr>
+      <% attr = hotel.attributes.compact %>
+      <% attr.extract!("id","name","identifier","created_at","updated_at","metadata") %>
+      <% attr.each do |k, v| %>
+        <tr>
+          <th class="top-align"><%= k.titleize %>:</th>
+          <td><%= v %></td>
+        </tr>
+      <% end %>
+      <tr>
+        <th class="top-align">Amenities:</th>
+        <td>
+          <% hotel.amenities.pluck(:name).each do |amenity_name| %>
+            <code class="min-content"><%= amenity_name %></code>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <th class="top-align">Images:</th>
+        <td>
+          <% hotel.images.each do |image| %>
+            <%= render image %>
+          <% end %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
