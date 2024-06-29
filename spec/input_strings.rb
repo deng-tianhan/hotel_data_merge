@@ -1,3 +1,10 @@
+def image_attributes
+  patagonia_hotels
+    .concat(paperflies_hotels)
+    .sample
+    .extract!('images')
+end
+
 def mixed_hotels
   [acme_hotels, patagonia_hotels, paperflies_hotels].flatten
 end
