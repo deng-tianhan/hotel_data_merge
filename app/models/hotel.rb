@@ -1,7 +1,7 @@
 class Hotel < ApplicationRecord
   has_many :amenities, dependent: :destroy
 
-  validates_presence_of :identifier
+  validates :identifier, presence: true, uniqueness: true
 
   # special handling for alias
   alias_attribute :lat, :latitude

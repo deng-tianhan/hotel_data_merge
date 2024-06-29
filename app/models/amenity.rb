@@ -2,18 +2,16 @@ class Amenity < ApplicationRecord
   belongs_to :hotel
 
   validates_presence_of :hotel
+  validates :name, presence: true, uniqueness: { scope: :hotel_id }
 
   include DataCleaning
 
   SPECIAL_KEYS = ['amenities','facilities'].freeze
 
   def self.build_from(attributes)
-    clean_array(attributes).map { |x| new(name: x) }
-  end
-
-  def self.clean_array(input)
-    [ self.data_cleaning(input)[SPECIAL_KEYS.first] ]
-    .flatten.compact
+    [ self.data_cleaning(attributes)[SPECIAL_KEYS.first] ]
+      .flatten.compact.uniq
+      .map { |x| new(name: x) }
   end
 
   def self.process_string(input)

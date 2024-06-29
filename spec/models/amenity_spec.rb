@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Amenity, type: :model do
-  describe '.clean_array' do
+  describe '.build_from' do
     def process(*args)
-      Amenity.clean_array(amenities: args)
+      Amenity.build_from(amenities: args).map(&:name)
     end
 
     it { expect(process(nil)).to eq([]) }
@@ -11,6 +11,10 @@ RSpec.describe Amenity, type: :model do
     it { expect(process('BusinessCenter')).to contain_exactly('business center') }
     it { expect(process('WiFi')).to contain_exactly('wifi') }
     it { expect(process('Coffee machine')).to contain_exactly('coffee machine') }
+
+    it 'removes duplicates' do
+      expect(process('wifi','WiFi')).to contain_exactly('wifi')
+    end
   end
 
   describe '.data_cleaning' do
