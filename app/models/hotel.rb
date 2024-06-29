@@ -29,7 +29,8 @@ class Hotel < ApplicationRecord
     hotel = Hotel.where(identifier: hotel_data[UNIQUE_KEY]).first_or_initialize
     hotel.assign_attributes(
       **hotel_data,
-      amenities: Amenity.build_from(amenities_data)
+      amenities: Amenity.build_from(amenities_data),
+      metadata: data
     )
     return hotel
   end

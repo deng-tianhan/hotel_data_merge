@@ -66,6 +66,11 @@ RSpec.describe Hotel, type: :model do
           .and not_change{ Amenity.count }
       end
 
+      it 'converts unknown attribute to metadata' do
+        Hotel.create_from(attributes.merge(a:'b', c:'d'))
+        expect(Hotel.last.metadata).to eq('a'=>'b', 'c'=>'d')
+      end
+
       context 'hotel raises error' do
         before { allow(Hotel).to receive(:new).and_raise('hotel') }
 

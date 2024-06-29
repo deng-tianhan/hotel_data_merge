@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_28_163352) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_29_010031) do
   create_table "amenities", force: :cascade do |t|
     t.integer "hotel_id"
     t.string "name"
@@ -31,6 +31,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_28_163352) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "destination"
+    t.json "metadata"
   end
 
 end
