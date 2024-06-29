@@ -1,5 +1,6 @@
 class Hotel < ApplicationRecord
   include DataCleaning
+  include DataMerging
 
   has_many :amenities, dependent: :destroy
   has_many :images, as: :imageable, dependent: :destroy
@@ -30,9 +31,9 @@ class Hotel < ApplicationRecord
 
       hotel = Hotel.where(identifier: hotel_data[UNIQUE_KEY]).first_or_initialize
       hotel.assign_attributes(
-        **hotel_data,
-        amenities: Amenity.build_from(amenities_data),
-        images: Image.build_from(images_data),
+        **(hotel.persisted? ? hotel.merge_hotel(new(hotel_data)) : hotel_data),
+        amenities: hotel.merge_amenities(Amenity.build_from(amenities_data)),
+        images: hotel.merge_images(Image.build_from(images_data)),
         metadata: data
       )
       return hotel

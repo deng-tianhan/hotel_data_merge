@@ -8,15 +8,24 @@ class Amenity < ApplicationRecord
 
   SPECIAL_KEYS = ['amenities','facilities'].freeze
 
+  def eql?(other)
+    if other.is_a?(Amenity)
+      name.eql?(other.name)
+    else
+      super
+    end
+  end
+
   class << self
     def build_from(attributes)
-      [ data_cleaning(attributes)[SPECIAL_KEYS.first] ]
+      data = data_cleaning(attributes)
+      SPECIAL_KEYS.map{ |key| data[key] }
         .flatten.compact.uniq
         .map { |x| new(name: x) }
     end
 
     def process_string(input)
-      output = input.strip.underscore.gsub('_', ' ')
+      output = input.strip.titleize.downcase
       output = 'wifi' if output == 'wi fi'
       return output
     end
