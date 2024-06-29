@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'input_strings'
 
 RSpec.describe Hotel, type: :model do
   let(:identifier) { 'Abc123' }
@@ -102,6 +103,31 @@ RSpec.describe Hotel, type: :model do
     it 'converts nested keys and flattens the structure' do
       expect(Hotel.data_cleaning(' location ' => { ' Inner Key ' => ' inner value ' }))
         .to include('inner key' => 'inner value')
+    end
+
+    it 'does not change primary key' do
+      expect(Hotel.data_cleaning(id: 123).keys).not_to respond_to(:id)
+    end
+
+    it 'keeps identifier and destination (acme format)' do
+      input = acme_hotels.sample
+      expect(Hotel.data_cleaning(input))
+        .to include('identifier' => input['Id'],
+                    'destination_id' => input['DestinationId'])
+    end
+
+    it 'keeps identifier and destination (patagonia format)' do
+      input = patagonia_hotels.sample
+      expect(Hotel.data_cleaning(input))
+        .to include('identifier' => input['id'],
+                    'destination' => input['destination'])
+    end
+
+    it 'keeps identifier and destination (paperflies format)' do
+      input = paperflies_hotels.sample
+      expect(Hotel.data_cleaning(input))
+        .to include('identifier' => input['hotel_id'],
+                    'destination_id' => input['destination_id'])
     end
   end
 end
