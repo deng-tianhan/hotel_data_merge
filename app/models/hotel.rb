@@ -3,12 +3,11 @@ class Hotel < ApplicationRecord
 
   validates :identifier, presence: true, uniqueness: true
 
-  # special handling for alias
-  alias_attribute :lat, :latitude
-  alias_attribute :lng, :longitude
-  alias_attribute :info, :description
-  alias_attribute :details, :description
-  alias_attribute :destination_id, :destination
+  ALIASES = {
+    'lat'=>:latitude, 'lng'=>:longitude, 'info'=>:description,
+    'details'=>:description, 'destination_id'=>:destination
+  }.freeze
+  ALIASES.each { |k, v| alias_attribute(k, v) }
 
   include DataCleaning
 
@@ -23,7 +22,7 @@ class Hotel < ApplicationRecord
 
   def self.build_from(attributes)
     data = data_cleaning(attributes)
-    hotel_data = data.extract!(*column_names)
+    hotel_data = data.extract!(*column_names, *ALIASES.keys)
     amenities_data = data.extract!(*Amenity::SPECIAL_KEYS.clone)
 
     hotel = Hotel.where(identifier: hotel_data[UNIQUE_KEY]).first_or_initialize

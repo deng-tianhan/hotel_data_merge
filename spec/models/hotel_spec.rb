@@ -66,8 +66,13 @@ RSpec.describe Hotel, type: :model do
           .and not_change{ Amenity.count }
       end
 
+      it 'persists alias attributes' do
+        Hotel.create_from(**attributes, details: 'text', lat: 1.2)
+        expect(Hotel.last).to have_attributes(info: 'text', latitude: 1.2)
+      end
+
       it 'converts unknown attribute to metadata' do
-        Hotel.create_from(attributes.merge(a:'b', c:'d'))
+        Hotel.create_from(**attributes, info: 1, a:'b', c:'d')
         expect(Hotel.last.metadata).to eq('a'=>'b', 'c'=>'d')
       end
 
