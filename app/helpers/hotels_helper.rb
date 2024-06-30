@@ -1,4 +1,28 @@
 module HotelsHelper
+  def prettify_hotel
+    output = @hotel.attributes
+    output.extract!('id', 'created_at', 'updated_at')
+    output.delete('metadata')&.each { |k, v| output[k] = v }
+
+    key_mapping = {
+      identifier: :id, destination: :destination_id,
+      latitude: :lat, longitude: :lng,
+    }
+    key_mapping.each { |k, v| output[v.to_s] = output.delete(k.to_s) }
+
+    location = output.extract!('address','city','country','lat','lng')
+    postal_code = output.extract!('postal_code').values.last
+    if postal_code && location['address'].exclude?(postal_code)
+      location['address'] = location['address'] + ', ' + postal_code
+    end
+    output['location'] = location.compact
+
+    output['amenities'] = prettify_amenities
+    output['images'] = prettify_images
+
+    return output
+  end
+
   def prettify_amenities
     @amenities ||= @hotel.amenities.to_a
     output = {}
@@ -23,6 +47,19 @@ module HotelsHelper
   end
 
   def prettify_images
+    @images ||= @hotel.images.to_a
+    output = {}
+    categories = @images.map(&:category).uniq
+    categories.each do |key|
+      output[key] =
+        @images
+          .filter{ |x| x.category == key }
+          .map{ |x| { 'description' => x.caption, "link" => x.link } }
+    end
+    return output
+  end
+
+  def sort_images
     @images ||= @hotel.images
     unify_categories(@images)
     @images.sort_by{ |x| pretty_string(x) }

@@ -2,8 +2,27 @@ require 'rails_helper'
 require 'input_strings'
 
 RSpec.describe HotelsHelper do
-  let!(:hotel) { Hotel.create(id: 3, identifier: 'x') }
+  let(:hotel) { Hotel.create(id: 3, identifier: 'x') }
   before { @hotel = hotel }
+
+  describe '#prettify_hotel' do
+    let(:obj) { JSON.parse(response_string)[0] }
+    let(:hotel) { Hotel.create_from(obj) }
+
+    it 'should be identical' do
+      expect(prettify_hotel).to eq(obj)
+    end
+
+    context 'postal code not in address string' do
+      let(:hotel) do
+        Hotel.create(identifier:'x',address:'home',postal_code:'0123')
+      end
+
+      it 'should be appended' do
+        expect(prettify_hotel['location']).to eq("address"=>"home, 0123")
+      end
+    end
+  end
 
   describe '#prettify_amenities' do
     let!(:a1) { hotel.amenities.create(category:'general',name:'indoor pool') }
@@ -37,8 +56,8 @@ RSpec.describe HotelsHelper do
     end
   end
 
-  describe '#prettify_images' do
-    it { expect(prettify_images).to eq([]) }
+  describe '#sort_images' do
+    it { expect(sort_images).to eq([]) }
 
     context 'has images' do
       let!(:image1) { hotel.images.create(caption:'a',category:'z',link:'1') }
@@ -46,14 +65,14 @@ RSpec.describe HotelsHelper do
       let!(:image3) { hotel.images.create(caption:'c',category:'z',link:'3') }
 
       it 'sort by category, followed by caption' do
-        expect(prettify_images).to eq([image2, image1, image3])
+        expect(sort_images).to eq([image2, image1, image3])
       end
 
       it 'unifies category' do
         # category is the nested key and can be different based on source
         # assuming caption is more important than the category
         image2.update!(caption: 'c')
-        expect(prettify_images.map(&:category)).to eq(%w[z z z])
+        expect(sort_images.map(&:category)).to eq(%w[z z z])
       end
     end
   end
