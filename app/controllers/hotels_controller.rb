@@ -27,6 +27,7 @@ class HotelsController < ApplicationController
   end
 
   def search_json
+    @hotels = @hotels.eager_load(:amenities, :images).all
     render json: @hotels.map{ |x| prettify_hotel(x) }.as_json
   end
 
@@ -52,7 +53,9 @@ class HotelsController < ApplicationController
   end
 
   def destroy_all
-    Hotel.all.map(&:destroy!)
+    Hotel.delete_all
+    Amenity.delete_all
+    Image.delete_all
 
     respond_to do |format|
       format.html { redirect_to hotels_url, notice: "All hotels successfully destroyed." }
@@ -86,7 +89,7 @@ class HotelsController < ApplicationController
     query = Hotel
     query = query.where(destination: destination) if destination.present?
     query = query.where(identifier: identifiers) if identifiers.present?
-    @hotels = query.all
+    @hotels = query
   end
 
   def sanitize_identifiers(identifiers)

@@ -27,7 +27,7 @@
 
   <div>
     <%= form.button "Load from snapshot", formaction: hotels_load_snapshot_path %>
-    <% if Hotel.count > 0 %>
+    <% if @hotels.any? %>
       <%= form.button "Delete all records", formaction: hotels_destroy_all_path %>
     <% end %>
   </div>
