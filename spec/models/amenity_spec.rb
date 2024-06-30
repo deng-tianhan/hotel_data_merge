@@ -13,17 +13,44 @@ RSpec.describe Amenity, type: :model do
     it { expect(process('Coffee machine')).to contain_exactly('coffee machine') }
 
     it 'removes duplicates' do
-      expect(process('wifi','WiFi')).to contain_exactly('wifi')
+      input = {
+        amenities: { "general"=>["pool","wifi"] },
+        facilities: { "general"=>["wifi"] }
+      }
+      output = Amenity.build_from(input)
+
+      expect(output).to be_an_instance_of(Array)
+      expect(output.length).to eq(2)
+      expect(output.map(&:attributes).map(&:compact))
+        .to eq(
+          [
+            { "category"=>"general", "name"=>"pool" },
+            { "category"=>"general", "name"=>"wifi" },
+          ]
+        )
     end
   end
 
   describe '.data_cleaning' do
-    it 'merges amenities by dropping nested key' do
+    it 'retains nested key as category' do
       input = {
         amenities: { "general"=>["pool"] },
         facilities: { "room"=>["tv"] }
       }
-      expect(Amenity.data_cleaning(input)).to include('amenities' => ['pool', 'tv'])
+      expect(Amenity.data_cleaning(input)).to eq(
+        "amenities" => [
+          { "category"=>"general", "name"=>"pool" },
+          { "category"=>"room", "name"=>"tv" }
+        ]
+      )
+    end
+
+    context 'no nested key' do
+      let(:input) { { facilities:["tv","wifi"] } }
+
+      it 'leaves category empty' do
+        expect(Amenity.data_cleaning(input)).to eq("facilities"=>["tv","wifi"])
+      end
     end
   end
 end

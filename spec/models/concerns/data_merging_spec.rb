@@ -20,13 +20,27 @@ RSpec.describe "DataMerging" do
     let(:attr2) { { identifier: identifier } }
     let(:attr3) { { identifier: identifier, amenities:{outside:['pool'],inside:['tv']} } }
 
-    it 'keeps amenities by unique name' do
+    it 'keeps amenities by unique name and category pair' do
       Hotel.create_from(attr1)
       expect(Hotel.last.amenities.map(&:name)).to eq(['tv','wifi'])
-      Hotel.create_from(attr2)
-      expect(Hotel.last.amenities.map(&:name)).to eq(['tv','wifi'])
+      expect(Hotel.last.amenities.map(&:category)).to eq([nil, nil])
+
+      expect{ Hotel.create_from(attr2) }.not_to change{ Amenity.all.map(&:attributes) }
+
       Hotel.create_from(attr3)
-      expect(Hotel.last.amenities.map(&:name)).to eq(['tv','wifi','pool'])
+      expect(Hotel.last.amenities.pluck(:category, :name))
+        .to contain_exactly(
+          ['inside','tv'],
+          [nil,'wifi'],
+          ['outside','pool'],
+        )
+    end
+
+    it 'allows same name under different categories' do
+      Hotel.create_from(attr3)
+      Hotel.create_from(identifier: identifier, amenities:{room:['tv']})
+      expect(Hotel.last.amenities.pluck(:category, :name))
+        .to include(['room','tv'], ['inside','tv'])
     end
   end
 

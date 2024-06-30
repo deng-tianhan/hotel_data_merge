@@ -4,24 +4,16 @@ class Amenity < ApplicationRecord
   belongs_to :hotel
 
   validates_presence_of :hotel
-  validates :name, presence: true, uniqueness: { scope: :hotel_id }
+  validates :name, presence: true, uniqueness: { scope: [:hotel_id, :category] }
 
   SPECIAL_KEYS = ['amenities','facilities'].freeze
-
-  def eql?(other)
-    if other.is_a?(Amenity)
-      name.eql?(other.name)
-    else
-      super
-    end
-  end
 
   class << self
     def build_from(attributes)
       data = data_cleaning(attributes)
       SPECIAL_KEYS.map{ |key| data[key] }
         .flatten.compact.uniq
-        .map { |x| new(name: x) }
+        .map { |x| x.is_a?(String) ? new(name:x) : new(x) }
     end
 
     def process_string(input)
@@ -31,11 +23,18 @@ class Amenity < ApplicationRecord
     end
 
     def process_nested(key, value, output)
-      # special handling to drop nested key for amenities (paperflies format)
-      # {amenities:{x:[1],y:[2]}} --> {amenities:[1,2]}
+      # {amenities:{x:[text]}} --> {amenities:[{name:text,category:x}]}
       if SPECIAL_KEYS.include?(key) && value.is_a?(Hash)
         output[SPECIAL_KEYS.first] ||= []
-        output[SPECIAL_KEYS.first].concat(data_cleaning(value.values).flatten)
+        output[SPECIAL_KEYS.first].concat(
+          value.map do |k, v|
+            if v.is_a?(Array)
+              v.map{ |name| { 'category' => k, 'name' => name } }
+            else # v is a string: {facilities:['tv','wifi']}
+              { 'name' => v }
+            end
+          end.flatten
+        )
         return true
       end
     end

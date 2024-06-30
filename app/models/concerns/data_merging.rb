@@ -29,7 +29,20 @@ module DataMerging
     end
 
     def merge_amenities(new_amenities)
-      amenities.to_a.concat(new_amenities).uniq
+      old_amenities = amenities.to_a
+      old_amenities.each do |a|
+        new_amenities.each do |b|
+          next if a.name != b.name
+          if a.category.blank?
+            old_amenities.delete(a)
+          elsif b.category.blank?
+            new_amenities.delete(b)
+          else
+            # same name different category, keep both
+          end
+        end
+      end
+      old_amenities.concat(new_amenities).uniq{ |x| [x.name,x.category] }
     end
 
     def merge_images(new_images)
