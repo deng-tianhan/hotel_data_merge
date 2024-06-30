@@ -46,7 +46,7 @@ module DataMerging
     end
 
     def merge_images(new_images)
-      images.to_a.concat(new_images).uniq
+      images.to_a.concat(new_images).uniq(&:link)
     end
   end
 end

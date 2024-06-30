@@ -10,14 +10,6 @@ class Image < ApplicationRecord
 
   SPECIAL_KEYS = ['images'].freeze
 
-  def eql?(other)
-    if other.is_a?(Image)
-      link.eql?(other.link)
-    else
-      super
-    end
-  end
-
   class << self
     def build_from(attributes)
       [ data_cleaning(attributes)[SPECIAL_KEYS.first] ]
