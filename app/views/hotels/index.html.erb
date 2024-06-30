@@ -8,6 +8,7 @@
       <tr>
         <th>Name</th>
         <th>Indentifier</th>
+        <th>Destination</th>
         <th></th>
       </tr>
     </thead>
@@ -20,6 +21,9 @@
           <td id="identifier_<%= dom_id hotel %>">
             <code class="min-content"><%= hotel.identifier %></code>
           </td>
+          <td id="destination_<%= dom_id hotel %>">
+            <%= hotel.destination %>
+          </td>
           <td><%= link_to "View Details", hotel %></td>
         </tr>
       <% end %>
@@ -27,11 +31,8 @@
   </table>
 </div>
 
-<% if Hotel.count > 0 %>
-  <%= button_to "Delete all hotel records", hotels_destroy_all_path %>
-<% else %>
-  <%= button_to "Load hotels from snapshot", hotels_load_snapshot_path %>
-<% end %>
+<%= render "search_form" %>
+<%= render "data_form" %>
 
 <h4 class="less-margin-bottom">Note</h4>
 
@@ -45,4 +46,4 @@
     <li>snapshot from <a href="https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/<%= name %>" target="blank"><%= name %></a></li>
   <% end %>
 </ol>
-<p>This means duplicate entries from paperflies will be prioritised over other sources.</p>
+<p>Load from snapshot button does exactly the same.</p>

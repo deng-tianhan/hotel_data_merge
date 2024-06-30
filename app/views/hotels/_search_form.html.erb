@@ -1,0 +1,45 @@
+<%= form_with url: search_path, method: :get do |form| %>
+  <% if defined?(errors) && errors.present? %>
+    <div style="color: red">
+      <h2><%= pluralize(errors.count, "error") %> prohibited this from being saved:</h2>
+
+      <ul>
+        <% errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="inline-grid">
+    <%= form.label :hotels, "Identifiers"%>
+    <%= form.text_field :hotels,
+      value: params[:hotels], placeholder: "example: iJhz,SjyX",
+      id: "input-hotels", class: "no-margin-bottom"
+    %>
+    <small class="gray less-margin-bottom">case sensitive, split by comma</small>
+  </div>
+  <div class="inline-grid">
+    <%= form.label :destination, "Destination" %>
+    <%= form.text_field :destination, value: params[:destination], id: "input-destination" %>
+  </div>
+  <div>
+    <%= form.button "search", class: "button-primary" %>
+    <%= form.submit "clear" %>
+    <div class="inline-grid">
+      <%= form.button "call api", type: "button", id: "api-button", formaction: api_search_url, class: "no-margin-bottom" %>
+      <small class="gray">opens new tab</small>
+    </div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+  var formaction = document.getElementById("api-button").getAttribute('formaction');
+
+  document.getElementById("api-button").onclick = function () {
+    url = formaction +
+      "?hotels=" + document.getElementById("input-hotels").value +
+      "&destination=" + document.getElementById("input-destination").value;
+    window.open(url, '_blank').focus();
+  };
+</script>

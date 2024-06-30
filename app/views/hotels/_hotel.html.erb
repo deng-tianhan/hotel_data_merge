@@ -28,14 +28,16 @@
           <% end %>
         </td>
       </tr>
-      <tr>
-        <th class="top-align">Images:</th>
-        <td>
-          <% sort_images.each do |image| %>
-            <%= render image %>
-          <% end %>
-        </td>
-      </tr>
+      <% if hotel.images.present? %>
+        <tr>
+          <th class="top-align">Images:</th>
+          <td>
+            <% sort_images.each do |image| %>
+              <%= render image %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
     </tbody>
   </table>
 </div>

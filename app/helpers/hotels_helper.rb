@@ -1,6 +1,6 @@
 module HotelsHelper
-  def prettify_hotel
-    output = @hotel.attributes
+  def prettify_hotel(hotel = @hotel)
+    output = hotel.attributes
     output.extract!('id', 'created_at', 'updated_at')
     output.delete('metadata')&.each { |k, v| output[k] = v }
 
@@ -17,18 +17,18 @@ module HotelsHelper
     end
     output['location'] = location.compact
 
-    output['amenities'] = prettify_amenities
-    output['images'] = prettify_images
+    output['amenities'] = prettify_amenities(hotel)
+    output['images'] = prettify_images(hotel)
 
     return output
   end
 
-  def prettify_amenities
-    @amenities ||= @hotel.amenities.to_a
+  def prettify_amenities(hotel = @hotel)
+    amenities = hotel.amenities.to_a
     output = {}
-    categories = @amenities.map(&:category).uniq.sort_by{ |x| x || ''}
+    categories = amenities.map(&:category).uniq.sort_by{ |x| x || ''}
     categories.each do |key|
-      output[key] = @amenities.filter{ |x| x.category == key }.map(&:name)
+      output[key] = amenities.filter{ |x| x.category == key }.map(&:name)
     end
 
     uncategorised_names = output.extract!(nil)[nil]
@@ -46,13 +46,13 @@ module HotelsHelper
     return output
   end
 
-  def prettify_images
-    @images ||= @hotel.images.to_a
+  def prettify_images(hotel = @hotel)
+    images = hotel.images.to_a
     output = {}
-    categories = @images.map(&:category).uniq
+    categories = images.map(&:category).uniq
     categories.each do |key|
       output[key] =
-        @images
+        images
           .filter{ |x| x.category == key }
           .map{ |x| { 'description' => x.caption, "link" => x.link } }
     end
@@ -104,5 +104,16 @@ module HotelsHelper
         end
       end
     end
+  end
+
+  def remove_broken_images
+    @images = @hotel.images.to_a
+    images_to_remove =
+      @hotel.images.filter do |image|
+        result = Net::HTTP.get_response(URI.parse(image.url))
+        !result.is_a?(Net::HTTPSuccess)
+      end
+    @images -= images_to_remove
+    return @images
   end
 end

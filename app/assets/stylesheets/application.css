@@ -53,6 +53,10 @@ table.hotel-details th {
   font-weight: bold;
 }
 
+.gray {
+  color: gray;
+}
+
 .min-content {
   width: min-content;
 }
@@ -63,4 +67,12 @@ table.hotel-details th {
 
 .max-width-60 {
   max-width: 60vw;
+}
+
+.data-form-url {
+  min-width: 32rem;
+}
+
+.inline-grid {
+  display: inline-grid;
 }

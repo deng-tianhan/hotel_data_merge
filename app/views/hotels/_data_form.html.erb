@@ -1,0 +1,35 @@
+<%= form_with url: hotels_load_url_path, method: :post do |form| %>
+  <% if defined?(errors) && errors.present? %>
+    <div style="color: red">
+      <h2><%= pluralize(errors.count, "error") %> prohibited this from being saved:</h2>
+
+      <ul>
+        <% errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <h4 class='less-margin-bottom'>Hotel Data Management</h4>
+  <div>
+    <%= form.label "Load data from URL" %>
+    <%= form.url_field :url, class: "data-form-url" %>
+    <%= form.submit "load", class: "button-primary" %>
+  </div>
+
+  <div>
+    <%= form.label "Load data from predefined URL sources" %>
+    <%= form.submit "acme" %>
+    <%= form.submit "patagonia" %>
+    <%= form.submit "paperflies" %>
+  </div>
+
+  <div>
+    <%= form.button "Load from snapshot", formaction: hotels_load_snapshot_path %>
+    <% if Hotel.count > 0 %>
+      <%= form.button "Delete all records", formaction: hotels_destroy_all_path %>
+    <% end %>
+  </div>
+<% end %>
+
