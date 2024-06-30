@@ -29,19 +29,23 @@ module DataMerging
     end
 
     def merge_amenities(new_amenities)
+      delete_old = []
+      delete_new = []
       old_amenities = amenities.to_a
       old_amenities.each do |a|
         new_amenities.each do |b|
-          next if a.name != b.name
+          next if a.name.gsub(' ', '') != b.name.gsub(' ', '')
           if a.category.blank?
-            old_amenities.delete(a)
+            delete_old.push(a)
           elsif b.category.blank?
-            new_amenities.delete(b)
+            delete_new.push(b)
           else
             # same name different category, keep both
           end
         end
       end
+      delete_old.each { |x| old_amenities.delete(x) }
+      delete_new.each { |x| new_amenities.delete(x) }
       old_amenities.concat(new_amenities).uniq{ |x| [x.name,x.category] }
     end
 

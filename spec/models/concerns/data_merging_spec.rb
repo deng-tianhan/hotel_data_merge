@@ -42,6 +42,22 @@ RSpec.describe "DataMerging" do
       expect(Hotel.last.amenities.pluck(:category, :name))
         .to include(['room','tv'], ['inside','tv'])
     end
+
+    context 'bug fix' do
+      let(:attr1) { { id:'x', 'Facilities'=>['BathTub'] } }
+      let(:attr2) { { id:'x', amenities:[] } }
+      let(:attr3) { { id:'x', amenities:{room:['bathtub']} } }
+
+      it 'should be merged' do
+        Hotel.create_from(attr1)
+        Hotel.create_from(attr2)
+        Hotel.create_from(attr3)
+        expect(Amenity.count).to eq(1)
+        expect(Hotel.last.amenities.last).to have_attributes(
+          category: 'room', name: 'bathtub'
+        )
+      end
+    end
   end
 
   context 'merge images' do
