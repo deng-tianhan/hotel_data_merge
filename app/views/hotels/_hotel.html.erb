@@ -18,15 +18,20 @@
       <tr>
         <th class="top-align">Amenities:</th>
         <td>
-          <% hotel.amenities.pluck(:name).each do |amenity_name| %>
-            <code class="min-content"><%= amenity_name %></code>
+          <% prettify_amenities.each do |category, amenity_names| %>
+            <p>
+              <strong><%= category&.titleize %></strong>
+              <% amenity_names.each do |amenity_name| %>
+                <code class="min-content"><%= amenity_name %></code>
+              <% end %>
+            </p>
           <% end %>
         </td>
       </tr>
       <tr>
         <th class="top-align">Images:</th>
         <td>
-          <% hotel.images.each do |image| %>
+          <% prettify_images.each do |image| %>
             <%= render image %>
           <% end %>
         </td>

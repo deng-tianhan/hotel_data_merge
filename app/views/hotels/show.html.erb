@@ -3,14 +3,14 @@
 <%= render @hotel %>
 
 <div class="margin-bottom">
-  <% if @hotel.id > 1 %>
-    <%= link_to "Previous hotel", hotel_path(@hotel.id - 1) %>
+  <% if prev_hotel_id %>
+    <%= link_to "Previous hotel", hotel_path(prev_hotel_id) %>
   <% else %>
     Previous hotel
   <% end %>
   |
-  <% if @hotel.id < Hotel.count %>
-    <%= link_to "Next hotel", hotel_path(@hotel.id + 1) %>
+  <% if next_hotel_id %>
+    <%= link_to "Next hotel", hotel_path(next_hotel_id) %>
   <% else %>
     Next hotel
   <% end %>

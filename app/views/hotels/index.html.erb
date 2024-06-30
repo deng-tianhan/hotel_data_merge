@@ -27,6 +27,12 @@
   </table>
 </div>
 
+<% if Hotel.count > 0 %>
+  <%= button_to "Delete all hotel records", hotels_destroy_all_path %>
+<% else %>
+  <%= button_to "Load hotels from snapshot", hotels_load_snapshot_path %>
+<% end %>
+
 <h4 class="less-margin-bottom">Note</h4>
 
 <p class="less-margin-bottom">By default, hotels are seeded using:</p>
@@ -39,6 +45,4 @@
     <li>snapshot from <a href="https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/<%= name %>" target="blank"><%= name %></a></li>
   <% end %>
 </ol>
-<p>This means duplicate entries from paperflies will overwrite other sources.</p>
-
-<!-- <%= link_to "New hotel", new_hotel_path %> -->
+<p>This means duplicate entries from paperflies will be prioritised over other sources.</p>
