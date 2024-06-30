@@ -53,9 +53,14 @@ class HotelsController < ApplicationController
   end
 
   def destroy_all
-    Hotel.delete_all
-    Amenity.delete_all
-    Image.delete_all
+    # TRUNCATE TABLE not supported by sqlite
+    # But sqlite does optimize DELETE when conditions are met
+    # https://www.sqlite.org/lang_delete.html#the_truncate_optimization
+    ActiveRecord::Base.connection.truncate_tables(
+      Amenity.table_name,
+      Hotel.table_name,
+      Image.table_name
+    )
 
     respond_to do |format|
       format.html { redirect_to hotels_url, notice: "All hotels successfully destroyed." }
@@ -78,7 +83,7 @@ class HotelsController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_hotel
-    @hotel = Hotel.find_by(id: params[:id]) || Hotel.find_by(identifier: params[:id])
+    @hotel = Hotel.eager_load(:amenities, :images).find_by(id: params[:id])
     remove_broken_images
   end
 
