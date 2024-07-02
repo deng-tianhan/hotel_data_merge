@@ -16,7 +16,7 @@
       <% @hotels.each do |hotel| %>
         <tr>
           <td id="hotel_name_<%= dom_id hotel %>">
-            <%= hotel.name.titleize %>
+            <%= hotel.name %>
           </td>
           <td id="identifier_<%= dom_id hotel %>">
             <code class="min-content"><%= hotel.identifier %></code>

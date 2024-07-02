@@ -1,4 +1,4 @@
-<H3><%= hotel.name.titleize %></H3>
+<H3><%= hotel.name %></H3>
 
 <div id="<%= dom_id hotel %>">
   <table class="borderless less-padding hotel-details">
@@ -12,7 +12,7 @@
       <% attr.each do |k, v| %>
         <tr>
           <th class="top-align"><%= k.titleize %>:</th>
-          <td><%= v %></td>
+          <td><%= v.is_a?(BigDecimal) ? number_with_precision(v, :precision => 6) : v %></td>
         </tr>
       <% end %>
       <tr>
