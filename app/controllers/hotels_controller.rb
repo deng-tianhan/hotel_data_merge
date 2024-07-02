@@ -23,11 +23,12 @@ class HotelsController < ApplicationController
       return redirect_to hotels_url
     end
 
+    @hotels = @hotels.all
     render :index
   end
 
   def search_json
-    @hotels = @hotels.eager_load(:amenities, :images).all
+    @hotels = @hotels.for_api
     render json: @hotels.map{ |x| prettify_hotel(x) }.as_json
   end
 
@@ -69,13 +70,11 @@ class HotelsController < ApplicationController
   end
 
   def create_hotels_from(json_string)
-    json_array = JSON.parse(json_string)
+    json_array = [JSON.parse(json_string)].flatten
 
     errors = []
-    json_array.each do |attributes|
-      hotel = Hotel.create_from(attributes)
-      errors.push(hotel.errors) if hotel.errors.present?
-    end
+    DataCleaner.process(json_array)
+    BatchQueryManager.process(json_array)
 
     return errors
   end
@@ -83,7 +82,7 @@ class HotelsController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_hotel
-    @hotel = Hotel.eager_load(:amenities, :images).find_by(id: params[:id])
+    @hotel = Hotel.for_show.find_by(id: params[:id])
     remove_broken_images
   end
 

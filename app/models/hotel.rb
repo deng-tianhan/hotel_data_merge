@@ -1,5 +1,4 @@
 class Hotel < ApplicationRecord
-  include DataCleaning
   include DataMerging
 
   has_many :amenities, dependent: :destroy
@@ -16,52 +15,31 @@ class Hotel < ApplicationRecord
   UNIQUE_KEY = 'identifier'.freeze
   SPECIAL_KEYS = ['location'].freeze
 
+  attr_accessor :new_amenities_attributes, :new_images_attributes
+
+  def build_from(data)
+    hotel_data = data.extract!(*Hotel.column_names, *ALIASES.keys)
+    amenities_data = data.extract!(*Amenity::SPECIAL_KEYS)
+    images_data = data.extract!(*Image::SPECIAL_KEYS)
+
+    hotel_data.merge!(metadata: data) if data.present?
+    hotel_data.compact!
+
+    if name.nil?
+      assign_attributes(hotel_data)
+    else
+      # merge with in-memory new hotel to gain benefit from alias attributes
+      merge_hotel(Hotel.new(hotel_data))
+    end
+
+    self.new_amenities_attributes = Amenity.attributes_from(amenities_data, id)
+    self.new_images_attributes = Image.attributes_from(images_data, self)
+  end
+
+  scope :for_api, -> { eager_load(:amenities, :images) }
+
   class << self
-    def create_from(attributes)
-      hotel = build_from(attributes)
-      hotel.save!
-      return hotel
-    end
-
-    def build_from(attributes)
-      data = data_cleaning(attributes)
-      hotel_data = data.extract!(*column_names, *ALIASES.keys)
-      amenities_data = data.extract!(*Amenity::SPECIAL_KEYS)
-      images_data = data.extract!(*Image::SPECIAL_KEYS)
-
-      hotel = Hotel.where(identifier: hotel_data[UNIQUE_KEY]).first_or_initialize
-      hotel.assign_attributes(
-        **(hotel.persisted? ? hotel.merge_hotel(new(hotel_data)) : hotel_data),
-        amenities: hotel.merge_amenities(Amenity.build_from(amenities_data)),
-        images: hotel.merge_images(Image.build_from(images_data)),
-        metadata: data
-      )
-      return hotel
-    end
-
-    alias_method :original_transform_key, :transform_key
-    alias_method :original_data_cleaning, :data_cleaning
-
-    def transform_key(key)
-      key = original_transform_key(key)
-      # remove prefix (paperflies format)
-      key = key[6..-1] if key.starts_with?('hotel_')
-      return key
-    end
-
-    def data_cleaning(input)
-      output = original_data_cleaning(input)
-      output[UNIQUE_KEY] ||= output.delete('id')
-      return output
-    end
-
-    def process_nested(key, value, output)
-      # special handling for nested attributes (paperflies format)
-      # {location:{country:'SG'}} --> {country:'SG'}
-      if SPECIAL_KEYS.include?(key) && value.is_a?(Hash)
-        output.merge!(data_cleaning(value))
-        return true
-      end
-    end
+    alias_method :for_batch_query, :for_api
+    alias_method :for_show, :for_api
   end
 end
