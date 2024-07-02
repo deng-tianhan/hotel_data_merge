@@ -38,12 +38,11 @@ class HotelsController < ApplicationController
   end
 
   def load_url
-    uri = URI(params[:url])
+    url = params[:url]
     commit = params[:commit]
 
-    if params[:url].blank? && SOURCES.include?(commit)
-      uri = URI(SOURCE_URL + commit)
-    end
+    url = SOURCE_URL + commit if url.blank? && SOURCES.include?(commit)
+    uri = URI(url) if url.present?
 
     res = Net::HTTP.get_response(uri)
     string = res.body if res.is_a?(Net::HTTPSuccess)
@@ -111,8 +110,8 @@ class HotelsController < ApplicationController
         format.html { redirect_to hotels_url, notice: "Hotels successfully created." }
         format.json { render :index, status: :created }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: errors, status: :unprocessable_entity }
+        puts "found #{errors.count} errors"
+        raise errors.first
       end
     end
   end

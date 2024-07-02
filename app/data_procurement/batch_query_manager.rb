@@ -12,6 +12,7 @@ class BatchQueryManager
   end
 
   def initialize(data)
+    Rails.logger = Logger.new(STDOUT)
     self.data = data
     self.identifiers = data.map { |hash| hash[Hotel::UNIQUE_KEY] }.uniq
     self.amenity_attrs = []
@@ -44,11 +45,13 @@ class BatchQueryManager
         amenity_attrs.concat(hotel.new_amenities_attributes)
         image_attrs.concat(hotel.new_images_attributes)
       end
+      Rails.logger.debug "#{batch.count} Hotels"
       Hotel.upsert_all(hotel_attrs, returning: false, record_timestamps: true)
     end
   end
 
   def upsert_amenities
+    Rails.logger.debug "#{amenity_attrs.count} Amenities to upsert"
     amenity_attrs.in_groups_of(BATCH_SIZE, false) do |group|
       Amenity.upsert_all(
         group,
@@ -59,6 +62,7 @@ class BatchQueryManager
   end
 
   def upsert_images
+    Rails.logger.debug "#{image_attrs.count} Images to upsert"
     image_attrs.in_groups_of(BATCH_SIZE, false) do |group|
       Image.upsert_all(
         group,

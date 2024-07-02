@@ -8,7 +8,7 @@ RSpec.describe HotelsHelper do
     let(:json) { JSON.parse(Snapshot.response_string)[0] }
 
     it 'should be identical' do
-      HotelsController.new.create_hotels_from(Snapshot.response_string)
+      suppress_log { HotelsController.new.create_hotels_from(Snapshot.response_string) }
       @hotel = Hotel.last
       output = prettify_hotel
       expect(output.except('amenities')).to eq(json.except('amenities'))

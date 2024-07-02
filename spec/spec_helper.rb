@@ -101,3 +101,9 @@ RSpec.configure do |config|
 end
 
 RSpec::Matchers.define_negated_matcher :not_change, :change
+
+def suppress_log(&block)
+  allow($stdout).to receive(:write)
+  yield
+  allow($stdout).to receive(:write).and_call_original
+end
