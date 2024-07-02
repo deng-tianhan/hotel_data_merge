@@ -52,7 +52,7 @@ RSpec.describe HotelsHelper do
     end
 
     context 'ungategorised name not found under other category' do
-      let!(:a4) { hotel.amenities.create(name:'wifi') }
+      let!(:a4) { hotel.amenities.create(category: '', name:'wifi') }
 
       it 'should be placed under general' do
         expect(output['general']).to contain_exactly('indoor pool','wifi')

@@ -44,10 +44,10 @@ RSpec.describe Amenity, type: :model do
     context 'no nested key' do
       let(:input) { { facilities:["tv","wifi"] } }
 
-      it 'keeps category nil for upsert' do
+      it 'keeps empty string for upsert' do
         expect(Amenity.attributes_from(input, hotel_id)).to eq([
-          { category: nil, name: 'tv', hotel_id: hotel_id },
-          { category: nil, name: 'wifi', hotel_id: hotel_id },
+          { category: '', name: 'tv', hotel_id: hotel_id },
+          { category: '', name: 'wifi', hotel_id: hotel_id },
         ])
       end
     end

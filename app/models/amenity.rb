@@ -27,7 +27,7 @@ class Amenity < ApplicationRecord
           value.each do |name|
             output.push(
               hotel_id: hotel_id,
-              category: nil, # required for upsert
+              category: '', # required for upsert
               name: process_string(name)
             )
           end

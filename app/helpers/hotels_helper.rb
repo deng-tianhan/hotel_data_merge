@@ -26,12 +26,12 @@ module HotelsHelper
   def prettify_amenities(hotel = @hotel)
     amenities = hotel.amenities.to_a
     output = {}
-    categories = amenities.map(&:category).uniq.sort_by{ |x| x || ''}
+    categories = amenities.map(&:category).uniq.sort_by{ |x| x || '' }
     categories.each do |key|
       output[key] = amenities.filter{ |x| x.category == key }.map(&:name)
     end
 
-    uncategorised_names = output.extract!(nil)[nil]
+    uncategorised_names = output.delete('')
     if uncategorised_names.present?
       categorised_names = output.values.flatten.join(",\n")
       uncategorised_names

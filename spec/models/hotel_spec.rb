@@ -50,7 +50,7 @@ RSpec.describe Hotel, type: :model do
           facilities: { room: ['tv'] },
         }.as_json)
         expect(hotel.new_amenities_attributes).to eq([
-          { hotel_id: hotel.id, name: "wifi", category: nil },
+          { hotel_id: hotel.id, name: "wifi", category: '' },
           { hotel_id: hotel.id, name: "tv", category: 'room' },
         ])
       end
