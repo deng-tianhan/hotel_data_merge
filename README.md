@@ -77,14 +77,12 @@ The `hotels` param also accepts json string
 ## Decisions on data cleaning & selecting the best data
 
 ### Data cleaning
-Check `app\models\concerns\data_cleaning.rb` as a starting place.
-
-Abstract methods are implemented in `Hotel`, `Amenity`, and `Image` models.
-
-In addition `Hotel` has some method wrappers, which does additional handling after calling the original method.
+Strip spaces and store keys in lowercase. Check `data_cleaner.rb` for details.
 
 ### Selecting the best data
 Check `app\models\concerns\data_merging.rb`, which contains the relevant logic extracted from `Hotel` model.
+
+Use `upsert_all` with `unique_by` to merge amenities and images efficiently. Check `batch_query_manager.rb` for details.
 
 Stores broken images but removes them when rendering the frontend.
 - Check `app\helpers\hotels_helper.rb#remove_broken_images`
@@ -93,9 +91,11 @@ Stores broken images but removes them when rendering the frontend.
 ## Performance Decisions
 
 ### Procuring the data
-Try to find existing records in DB first and update them, instead of Rails default: delete & create new associations.
+Eager load to avoid n+1 queries.
+
+Batch upsert records to reduce number of DB writes.
 
 For large data set this could be moved to rabbitmq + consumer.
 
 ### Delivering the data
-Only query `hotels` table once, regardless of how many parameters provided
+Eager load to avoid n+1 queries.
