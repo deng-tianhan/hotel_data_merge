@@ -1,32 +1,34 @@
-def image_attributes
-  patagonia_hotels
-    .concat(paperflies_hotels)
-    .sample
-    .extract!('images')
-end
+class Snapshot
+  class << self
+    def image_attributes
+      patagonia_hotels
+        .concat(paperflies_hotels)
+        .sample
+        .extract!('images')
+    end
 
-def mixed_hotels
-  [acme_hotels, patagonia_hotels, paperflies_hotels].flatten
-end
+    def mixed_hotels
+      [acme_hotels, patagonia_hotels, paperflies_hotels].flatten
+    end
 
-def mixed_string
-  mixed_hotels.to_json
-end
+    def mixed_string
+      mixed_hotels.to_json
+    end
 
-def acme_hotels
-  JSON.parse(acme_string)
-end
+    def acme_hotels
+      JSON.parse(acme_string)
+    end
 
-def patagonia_hotels
-  JSON.parse(patagonia_string)
-end
+    def patagonia_hotels
+      JSON.parse(patagonia_string)
+    end
 
-def paperflies_hotels
-  JSON.parse(paperflies_string)
-end
+    def paperflies_hotels
+      JSON.parse(paperflies_string)
+    end
 
-def acme_string
-  <<~EOF
+    def acme_string
+      <<~EOF
 [
     {
         "Id": "iJhz",
@@ -91,11 +93,11 @@ def acme_string
         ]
     }
 ]
-  EOF
-end
+EOF
+    end
 
-def patagonia_string
-  <<~EOF
+    def patagonia_string
+      <<~EOF
 [
     {
         "id": "iJhz",
@@ -166,11 +168,11 @@ def patagonia_string
         }
     }
 ]
-  EOF
-end
+EOF
+    end
 
-def paperflies_string
-  <<~EOF
+    def paperflies_string
+      <<~EOF
 [
     {
         "hotel_id": "iJhz",
@@ -334,11 +336,11 @@ def paperflies_string
         ]
     }
 ]
-  EOF
-end
+EOF
+    end
 
-def response_string
-  <<~EOF
+    def response_string
+      <<~EOF
 [
   {
     "id": "iJhz",
@@ -378,5 +380,7 @@ def response_string
     ]
   }
 ]
-  EOF
+EOF
+    end
+  end
 end

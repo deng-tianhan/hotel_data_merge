@@ -33,8 +33,7 @@ class HotelsController < ApplicationController
   end
 
   def load_snapshot
-    require '.\spec\input_strings'
-    errors = create_hotels_from(mixed_string)
+    errors = create_hotels_from(Snapshot.mixed_string)
     load_response(errors)
   end
 
