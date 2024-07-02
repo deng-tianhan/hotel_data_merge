@@ -21,9 +21,9 @@ module DataMerging
       # try to deep_merge metadata
       h1 = metadata || {}
       h2 = other.metadata || {}
-      new_metadata = h1.deep_merge(h2, &:+)
+      new_metadata = h1.deep_merge(h2)
       new_metadata = nil if new_metadata.empty?
-      metadata = new_metadata
+      self.metadata = new_metadata
     end
   end
 end

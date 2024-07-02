@@ -24,13 +24,8 @@ class Hotel < ApplicationRecord
 
     hotel_data.merge!(metadata: data) if data.present?
     hotel_data.compact!
-
-    if name.nil?
-      assign_attributes(hotel_data)
-    else
-      # merge with in-memory new hotel to gain benefit from alias attributes
-      merge_hotel(Hotel.new(hotel_data))
-    end
+    # merge with in-memory new hotel to gain benefit from alias attributes
+    merge_hotel(Hotel.new(hotel_data))
 
     self.new_amenities_attributes ||= []
     self.new_amenities_attributes.concat(Amenity.attributes_from(amenities_data, id))
