@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_30_002605) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_01_151900) do
   create_table "amenities", force: :cascade do |t|
     t.integer "hotel_id"
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "category"
+    t.index ["hotel_id", "category", "name"], name: "index_amenities_on_hotel_id_and_category_and_name", unique: true
   end
 
   create_table "hotels", force: :cascade do |t|
@@ -43,6 +44,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_30_002605) do
     t.string "category"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["imageable_type", "imageable_id", "link"], name: "index_images_on_imageable_type_and_imageable_id_and_link", unique: true
     t.index ["imageable_type", "imageable_id"], name: "index_images_on_imageable"
   end
 
