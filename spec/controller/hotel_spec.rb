@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'input_strings'
 
 RSpec.describe HotelsController do
   describe "GET /index" do
@@ -7,6 +6,6 @@ RSpec.describe HotelsController do
   end
 
   describe '#create_hotels_from' do
-    it { expect(subject.create_hotels_from(mixed_string)).to be }
+    it { expect(subject.create_hotels_from(Snapshot.mixed_string)).to be }
   end
 end

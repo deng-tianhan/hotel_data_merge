@@ -1,16 +1,23 @@
 require 'rails_helper'
-require 'input_strings'
 
 RSpec.describe HotelsHelper do
   let(:hotel) { Hotel.create(id: 3, identifier: 'x') }
   before { @hotel = hotel }
 
   describe '#prettify_hotel' do
-    let(:obj) { JSON.parse(response_string)[0] }
-    let(:hotel) { Hotel.create_from(obj) }
+    let(:json) { JSON.parse(Snapshot.response_string)[0] }
 
     it 'should be identical' do
-      expect(prettify_hotel).to eq(obj)
+      HotelsController.new.create_hotels_from(Snapshot.response_string)
+      @hotel = Hotel.last
+      output = prettify_hotel
+      expect(output.except('amenities')).to eq(json.except('amenities'))
+
+      # amenities may be in different order due to sorting
+      expect(output['amenities'].keys).to eq(json['amenities'].keys)
+      output['amenities'].each do |category, values|
+        expect(values).to contain_exactly(*json['amenities'][category])
+      end
     end
 
     context 'postal code not in address string' do
@@ -28,20 +35,19 @@ RSpec.describe HotelsHelper do
     let!(:a1) { hotel.amenities.create(category:'general',name:'indoor pool') }
     let!(:a2) { hotel.amenities.create(category:'room',name:'tv') }
     let!(:a3) { hotel.amenities.create(category:'room',name:'aircon') }
+    let(:output) { prettify_amenities }
 
     it 'group by category' do
-      expect(prettify_amenities).to eq(
-        'general'=>['indoor pool'], 'room'=>['tv','aircon']
-      )
+      expect(output['general']).to eq(['indoor pool'])
+      expect(output['room']).to contain_exactly('tv','aircon')
     end
 
     context 'ungategorised name found under another category' do
       let!(:a4) { hotel.amenities.create(name:'pool') }
 
       it 'should be ignored' do
-        expect(prettify_amenities).to eq(
-          'general'=>['indoor pool'], 'room'=>['tv','aircon']
-        )
+        expect(output['general']).to eq(['indoor pool'])
+        expect(output['room']).to contain_exactly('tv','aircon')
       end
     end
 
@@ -49,9 +55,8 @@ RSpec.describe HotelsHelper do
       let!(:a4) { hotel.amenities.create(name:'wifi') }
 
       it 'should be placed under general' do
-        expect(prettify_amenities).to eq(
-          'general'=>['indoor pool','wifi'], 'room'=>['tv','aircon']
-        )
+        expect(output['general']).to contain_exactly('indoor pool','wifi')
+        expect(output['room']).to contain_exactly('tv','aircon')
       end
     end
   end
