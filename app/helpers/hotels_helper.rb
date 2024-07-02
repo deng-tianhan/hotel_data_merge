@@ -25,6 +25,21 @@ module HotelsHelper
 
   def prettify_amenities(hotel = @hotel)
     amenities = hotel.amenities.to_a
+
+    dirty_records = []
+    amenities.each do |x|
+      amenities.each do |y|
+        if x.name != y.name && x.name.gsub(' ', '') == y.name.gsub(' ', '')
+          if x.category.empty? || y.category&.length&.>(x.category.length)
+            dirty_records.push(x)
+          else
+            dirty_records.push(y)
+          end
+        end
+      end
+    end
+    dirty_records.each { |x| amenities.delete(x) }
+
     output = {}
     categories = amenities.map(&:category).uniq.sort_by{ |x| x || '' }
     categories.each do |key|
