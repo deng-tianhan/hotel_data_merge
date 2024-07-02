@@ -32,8 +32,11 @@ class Hotel < ApplicationRecord
       merge_hotel(Hotel.new(hotel_data))
     end
 
-    self.new_amenities_attributes = Amenity.attributes_from(amenities_data, id)
-    self.new_images_attributes = Image.attributes_from(images_data, self)
+    self.new_amenities_attributes ||= []
+    self.new_amenities_attributes.concat(Amenity.attributes_from(amenities_data, id))
+
+    self.new_images_attributes ||= []
+    self.new_images_attributes.concat(Image.attributes_from(images_data, self))
   end
 
   scope :for_api, -> { eager_load(:amenities, :images) }

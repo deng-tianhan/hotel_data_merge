@@ -48,9 +48,9 @@ RSpec.describe Hotel, type: :model do
         hotel.build_from({
           amenities: ['wifi'],
           facilities: { room: ['tv'] },
-        }.deep_transform_keys(&:to_s))
+        }.as_json)
         expect(hotel.new_amenities_attributes).to eq([
-          { hotel_id: hotel.id, name: "wifi" },
+          { hotel_id: hotel.id, name: "wifi", category: nil },
           { hotel_id: hotel.id, name: "tv", category: 'room' },
         ])
       end
@@ -58,7 +58,7 @@ RSpec.describe Hotel, type: :model do
       it 'assigns new_images_attributes' do
         hotel.build_from({
           images: { room: [{ link: 'link' }] }
-        }.deep_transform_keys(&:to_s))
+        }.as_json)
         expect(hotel.new_images_attributes).to eq([{
           imageable_type: 'Hotel', imageable_id: hotel.id, category: 'room'
         }.merge("link" => "link")])
@@ -67,6 +67,17 @@ RSpec.describe Hotel, type: :model do
       it 'converts unknown attribute to metadata' do
         hotel.build_from({info: 1, a:'b', c:'d'}.stringify_keys)
         expect(hotel.metadata).to eq('a'=>'b', 'c'=>'d')
+      end
+
+      context 'from multiple sources' do
+        let(:input1) { { images: { room: [{ link: 'link1' }] }}.as_json }
+        let(:input2) { { images: { general: [{ link: 'link2' }] }}.as_json }
+
+        it 'should be merged' do
+          hotel.build_from(input1)
+          hotel.build_from(input2)
+          expect(hotel.new_images_attributes.count).to eq(2)
+        end
       end
     end
   end
